@@ -22,6 +22,7 @@ test_device() {
 	echo "Running ${TEST_NAME}"
 
 	pdev="$(_get_pci_dev_from_blkdev)"
+	sysfs="/sys/bus/pci/devices/${pdev}"
 
 	if _test_dev_is_rotational; then
 		size="32m"
@@ -42,4 +43,8 @@ test_device() {
 	done
 
 	echo "Test complete"
+
+	# rescan for device (it might have been evicted by the kernel)
+	echo 1 > "${sysfs}/remove"
+	echo 1 > /sys/bus/pci/rescan
 }
